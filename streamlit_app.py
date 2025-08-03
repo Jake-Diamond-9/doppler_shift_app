@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # Performance optimization: Disable some Streamlit features
-st.set_option("deprecation.showPyplotGlobalUse", False)
+# Note: st.set_option() removed due to compatibility issues
 
 
 # Authentication
