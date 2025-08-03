@@ -16,6 +16,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Performance optimization: Disable some Streamlit features
+st.set_option("deprecation.showPyplotGlobalUse", False)
+
 
 # Authentication
 def check_password():
@@ -441,16 +444,21 @@ if st.sidebar.button("Calculate Doppler Shift", type="primary", key="calc_button
     m = np.transpose(np.array([[x_coord1, y_coord1, z_coord1]]))
     n = np.transpose(np.array([[x_coord2, y_coord2, z_coord2]]))
 
-    try:
-        V_so_der, time, counts_list, f_o, cents, step_size_march = doppler(
-            m, n, l, tempo, counts, t_start, f_s
-        )
-    except ValueError as e:
-        st.error(f"Calculation error: {e}")
-        st.stop()
-    except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
-        st.stop()
+    # Cache the doppler calculation to avoid recomputing
+    @st.cache_data
+    def calculate_doppler(m, n, l, tempo, counts, t_start, f_s):
+        try:
+            return doppler(m, n, l, tempo, counts, t_start, f_s)
+        except ValueError as e:
+            st.error(f"Calculation error: {e}")
+            st.stop()
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {e}")
+            st.stop()
+
+    V_so_der, time, counts_list, f_o, cents, step_size_march = calculate_doppler(
+        m, n, l, tempo, counts, t_start, f_s
+    )
 
     # Yard line locations and markers
     yd_markers_locations = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
