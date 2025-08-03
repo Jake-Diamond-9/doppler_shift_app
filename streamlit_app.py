@@ -97,7 +97,7 @@ st.markdown(
 st.markdown(
     """
 <div class="info-box">
-    <strong>About this app:</strong> Calculate the doppler shift effect for a drill set. 
+    <strong>About this app:</strong> Calculate the doppler shift effect for a drill set. Associated report can be found <a href="https://docs.google.com/document/d/1jpjbC3Ve1JifRc_BCOBSKnLyrj_uqPvXMSYwGp_5C3I/edit?usp=sharing" target="_blank">here</a>.
 </div>
 """,
     unsafe_allow_html=True,
