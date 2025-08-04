@@ -10,7 +10,7 @@ import plotly.express as px
 
 # Page configuration
 st.set_page_config(
-    page_title="Doppler Shift Calculator for Marching Band",
+    page_title="Doppler Shift Calculator",
     page_icon="🎵",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -28,8 +28,18 @@ def check_password():
         """Checks whether a password entered by the user is correct."""
         # Get password from secrets or environment variable
         correct_password = st.secrets.get(
-            "password", os.environ.get("DOPPLER_PASSWORD", "doppler2024")
+            "password", os.environ.get("DOPPLER_PASSWORD", None)
         )
+
+        # If no password is configured, show an error
+        if correct_password is None:
+            st.error("⚠️ Password not configured. Please set up authentication.")
+            st.info(
+                "To set up authentication, either:\n"
+                '1. Create a `.streamlit/secrets.toml` file with `password = "your_password"`\n'
+                "2. Set the `DOPPLER_PASSWORD` environment variable"
+            )
+            st.stop()
 
         if st.session_state["password"] == correct_password:
             st.session_state["password_correct"] = True
