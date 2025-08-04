@@ -120,8 +120,8 @@ def dot2coord(dot):
     step_size = 5 / 8
 
     field_width = 160 / 3
-    front_hash = 60 / 3
-    back_hash = front_hash + 12.5
+    front_hash = 60 / 3  # NCAA
+    back_hash = front_hash + 12.5  # NCAA
 
     if dot["side"] == "side1":
         if dot["io"] == "inside":
@@ -173,20 +173,32 @@ def doppler(m, n, l, tempo, counts, t_start, f_s):
     if set_dist == 0:
         raise ValueError("Start and end positions cannot be the same (distance = 0)")
 
+    # calculate step size for the set
     step_size = 8 / ((set_dist / counts) / (5 / 8))
 
+    # calculate velocity of the source
     Vs = set_dist / ((60 / tempo) * counts)  # in yds per sec
+
+    # calculate the end time of the set
     t_end = set_dist / Vs + t_start
+
+    # number of points to calculate the doppler shift at
     num_pts = 100
+
+    # create an array of time points
     t = np.linspace(t_start, t_end, num_pts)
     t = t.reshape(1, num_pts)
 
+    # calculate the count at each time point
     counts_list = t * (tempo / 60)
 
+    # calculate the position of the source at each time point
     Ps = m + r * ((t - t_start) / (t_end - t_start))
 
+    # calculate the distance between the source and the observer
     d_so = np.linalg.norm(Ps, axis=0)
 
+    # extract the coordinates of the source and the observer
     m1 = m[0, 0]
     m2 = m[1, 0]
     m3 = m[2, 0]
@@ -197,6 +209,7 @@ def doppler(m, n, l, tempo, counts, t_start, f_s):
     l2 = l[1, 0]
     l3 = l[2, 0]
 
+    # calculate the velocity between the source and the observer from the derivative of the distance between the source and the observer
     V_so_der = (
         1.0
         / np.sqrt(
@@ -278,8 +291,11 @@ def doppler(m, n, l, tempo, counts, t_start, f_s):
     ) / 2.0
 
     c = 375.44  # sound speed in air in units of yd/s
+
+    # calculate the frequency heard by the observer
     f_o = f_s * (c / (c + V_so_der))
 
+    # calculate the doppler shift in cents
     cents = (1200 / np.log(2)) * np.log(f_o / f_s)
 
     return V_so_der, t, counts_list, f_o, cents, step_size
@@ -304,7 +320,7 @@ t_start = 0.0  # Hardcoded to zero
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Observer Position**")
 observer_mode = st.sidebar.radio(
-    "Observer Mode", ["Custom", "Lucas Oil Box (approximate)"], key="observer_mode"
+    "Observer Mode", ["Custom", "Lucas Oil Box (approximated)"], key="observer_mode"
 )
 
 if observer_mode == "Custom":
